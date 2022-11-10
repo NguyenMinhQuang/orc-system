@@ -1,3 +1,6 @@
 go.mod
 go.sum
 .env
+libiconv2.dll
+libintl3.dll
+make.exe

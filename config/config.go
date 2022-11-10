@@ -2,25 +2,33 @@ package config
 
 import (
 	"errors"
+	"log"
+	"orc-system/codetype"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
 
-type Config struct {
-	AppVersion  string `envconfig:"APP_VERSION"`
-	Port        string `envconfig:"PORT"`
-	IsDebug     bool   `envconfig:"IS_DEBUG"`
-	Stage       string `envconfig:"STAGE"`
-	ServiceHost string `envconfig:"SERVICE_HOST"`
-	SSL         bool   `envconfig:"SSL"`
+var config *Config
 
-	Mysql struct {
-		Host       string `envconfig:"DB_HOST"`
-		ReaderHost string `envconfig:"DB_READER_HOST"`
-		UserName   string `envconfig:"DB_USERNAME"`
-		PassWord   string `envconfig:"DB_PASSWORD"`
-		DBName     string `envconfig:"DB_NAME"`
+type Config struct {
+	AppVersion   string             `envconfig:"APP_VERSION"`
+	Port         string             `envconfig:"PORT"`
+	IsDebug      bool               `envconfig:"IS_DEBUG"`
+	Stage        codetype.StageType `envconfig:"STAGE"`
+	ServiceHost  string             `envconfig:"SERVICE_HOST"`
+	SSL          bool               `envconfig:"SSL"`
+	AllowOrigins string             `envconfig:"ALLOW_ORIGINS"`
+
+	Postgres struct {
+		Host           string `envconfig:"DB_HOST"`
+		Port           string `envconfig:"DB_PORT"`
+		ReaderHost     string `envconfig:"DB_READER_HOST"`
+		UserName       string `envconfig:"DB_USERNAME"`
+		PassWord       string `envconfig:"DB_PASSWORD"`
+		DBName         string `envconfig:"DB_NAME"`
+		DBMaxIdleConns int    `envconfig:"DB_MAX_IDLE_CONNS"`
+		DBMaxOpenConns int    `envconfig:"DB_MAX_OPEN_CONNS"`
 	}
 	HealthCheck struct {
 		HealthCheckEndPoint string `envconfig:"HEAL_CHECK_ENPOINT"`
@@ -35,15 +43,20 @@ type Config struct {
 	}
 }
 
-func LoadConfig() (*Config, error) {
-	var config = &Config{}
+func init() {
+	config = &Config{}
 	err := godotenv.Load()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 	err = envconfig.Process("", config)
 	if err != nil {
-		return nil, errors.New("failed to decode config env")
+		log.Fatal(errors.New("failed to decode config env"))
 	}
-	return config, nil
+
+	config.Stage.UpCase()
+}
+
+func GetConfig() *Config {
+	return config
 }

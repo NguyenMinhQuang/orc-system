@@ -1,7 +1,19 @@
 package client
 
-import "context"
+import (
+	"gorm.io/gorm"
+)
 
 type Client struct {
-	db func(ctx context.Context)
+	db *gorm.DB
+}
+
+func (e *Client) DB() *gorm.DB {
+	return e.db
+}
+
+func NewClient(db *gorm.DB) *Client {
+	return &Client{
+		db: db,
+	}
 }
