@@ -1,0 +1,38 @@
+package example
+
+import (
+	"github.com/labstack/echo/v4"
+	"net/http"
+	"orc-system/internal/usecase/example"
+	"orc-system/pkg/httpErrors"
+	"orc-system/pkg/logger"
+	"orc-system/pkg/utils"
+)
+
+type ExampleHandler struct {
+	Example example.IUseCase
+	logger  logger.Logger
+}
+
+func NewExampleHandler(e *echo.Group, us example.IUseCase, log logger.Logger) {
+	handler := &ExampleHandler{
+		Example: us,
+		logger:  log,
+	}
+	e.GET("/example", handler.GetUsers)
+}
+
+func (h *ExampleHandler) GetUsers(c echo.Context) error {
+	ctx := c.Request().Context()
+	var param example.GetByIDInput
+
+	if err := c.Bind(&param); err != nil {
+		return utils.APIResponseError(c, http.StatusBadRequest, httpErrors.ErrBadRequest)
+	}
+
+	resp, err := h.Example.GetByID(ctx, param)
+	if err != nil {
+		return utils.HandlerError(c, err)
+	}
+	return utils.APIResponseOK(c, resp)
+}

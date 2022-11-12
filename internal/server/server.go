@@ -1,11 +1,13 @@
-package server
+package delivery
 
 import (
 	"context"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"net/http"
 	"orc-system/config"
+	"orc-system/internal/token"
 	"orc-system/pkg/logger"
 	"os"
 	"os/signal"
@@ -22,16 +24,28 @@ const (
 
 // Server struct
 type Server struct {
-	echo   *echo.Echo
-	cfg    *config.Config
-	db     *gorm.DB
-	logger logger.Logger
+	echo       *echo.Echo
+	tokenMaker token.Maker
+	cfg        *config.Config
+	db         *gorm.DB
+	logger     logger.Logger
 }
 
-func NewServer(cfg *config.Config, db *gorm.DB, logger logger.Logger) *Server {
-	return &Server{echo: echo.New(), cfg: cfg, db: db, logger: logger}
+func NewServer(cfg *config.Config, db *gorm.DB, logger logger.Logger) (*Server, error) {
+	tokenMaker, err := token.NewJWTMaker(cfg.TokenSymmetricKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", err)
+	}
+	return &Server{
+		echo:       echo.New(),
+		tokenMaker: tokenMaker,
+		cfg:        cfg,
+		db:         db,
+		logger:     logger}, nil
 }
+
 func (s *Server) Run() error {
+
 	sv := &http.Server{
 		Addr:           s.cfg.Port,
 		MaxHeaderBytes: maxHeaderBytes,
@@ -46,6 +60,8 @@ func (s *Server) Run() error {
 	if err := s.NewHTTPHandler(s.echo); err != nil {
 		return err
 	}
+
+	// gracefull Shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit

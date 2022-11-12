@@ -17,12 +17,15 @@ func main() {
 	appLogger.InitLogger()
 	appLogger.Infof("AppVersion: %s, LogLevel: %s, Stage: %s, SSL: %v", cfg.AppVersion, cfg.Logger.Level, cfg.Stage, cfg.SSL)
 
-	psqlDB, err := database.NewPsqlDB(cfg)
+	sqlDB, err := database.NewMysqlDB(cfg)
 	if err != nil {
 		appLogger.Fatalf("Postgresql init: %s", err)
 	}
-	defer database.DisConnection()
-	s := server.NewServer(cfg, psqlDB, appLogger)
+	defer database.DisConnect()
+	s, err := server.NewServer(cfg, sqlDB, appLogger)
+	if err != nil {
+		log.Fatal("cannot create server:", err)
+	}
 	if err = s.Run(); err != nil {
 		log.Fatal(err)
 	}

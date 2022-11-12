@@ -1,9 +1,14 @@
-package server
+package delivery
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"
+	apiMiddleware "orc-system/internal/middleware"
+	"orc-system/internal/repository"
+	service2 "orc-system/internal/service"
+	"orc-system/internal/usecase"
 )
 
 func (s *Server) NewHTTPHandler(e *echo.Echo) error {
@@ -45,14 +50,19 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 		return c.NoContent(http.StatusOK)
 	})
 
-	//skipPaths := []string{
-	//	"/healthcheck",
-	//}
-	//nologinPaths := []string{
-	//	"/api/login",
-	//}
-	// middlerware
-	// TODO: continue
+	skipPaths := []string{
+		"/healthcheck",
+	}
+	nologinPaths := []string{
+		"/api/login",
+	}
+	e.Use(apiMiddleware.NewAuthenticator(skipPaths, nologinPaths).Middleware(s.tokenMaker))
+
+	// init repo
+	repo := repository.NewRepository(s.db)
+	service := service2.NewService()
+	useCase := usecase.NewUseCase(repo, service)
+	fmt.Println(useCase)
 
 	return nil
 }
