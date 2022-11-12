@@ -13,4 +13,5 @@ type (
 
 type IRepository interface {
 	GetExampleByID(param GetExampleByIDInput, ctx context.Context) (model.Example, error)
+	GetAllUser(ctx context.Context) ([]model.User, error)
 }

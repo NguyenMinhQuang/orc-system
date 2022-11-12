@@ -19,7 +19,7 @@ func main() {
 
 	sqlDB, err := database.NewMysqlDB(cfg)
 	if err != nil {
-		appLogger.Fatalf("Postgresql init: %s", err)
+		appLogger.Fatalf("Mysql init: %s", err)
 	}
 	defer database.DisConnect()
 	s, err := server.NewServer(cfg, sqlDB, appLogger)

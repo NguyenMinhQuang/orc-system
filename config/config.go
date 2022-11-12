@@ -22,7 +22,7 @@ type Config struct {
 	TokenSymmetricKey string             `envconfig:"TOKEN_SYMMETRIC_KEY"`
 	EndPoint          string             `envconfig:"END_POINT"`
 
-	Postgres struct {
+	Mysql struct {
 		Host           string `envconfig:"DB_HOST"`
 		Port           string `envconfig:"DB_PORT"`
 		ReaderHost     string `envconfig:"DB_READER_HOST"`
@@ -31,6 +31,7 @@ type Config struct {
 		DBName         string `envconfig:"DB_NAME"`
 		DBMaxIdleConns int    `envconfig:"DB_MAX_IDLE_CONNS"`
 		DBMaxOpenConns int    `envconfig:"DB_MAX_OPEN_CONNS"`
+		DBDebugMode    bool   `envconfig:"DB_DEBUG_MODE"`
 	}
 	HealthCheck struct {
 		HealthCheckEndPoint string `envconfig:"HEAL_CHECK_ENPOINT"`

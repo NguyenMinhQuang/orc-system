@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
-	"net/http"
 	"orc-system/config"
 	"orc-system/internal/token"
 	"orc-system/pkg/logger"
@@ -44,13 +43,9 @@ func NewServer(cfg *config.Config, db *gorm.DB, logger logger.Logger) (*Server, 
 
 func (s *Server) Run() error {
 
-	sv := &http.Server{
-		Addr:           s.cfg.Port,
-		MaxHeaderBytes: maxHeaderBytes,
-	}
 	go func() {
 		s.logger.Infof("Server is listening on PORT: %s", s.cfg.Port)
-		if err := s.echo.StartServer(sv); err != nil {
+		if err := s.echo.Start(":" + s.cfg.Port); err != nil {
 			s.logger.Fatalf("Error starting Server: ", err)
 		}
 	}()

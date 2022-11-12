@@ -20,6 +20,7 @@ func NewExampleHandler(e *echo.Group, us example.IUseCase, log logger.Logger) {
 		logger:  log,
 	}
 	e.GET("/example", handler.GetUsers)
+	e.GET("/listuser", handler.GetAllUser)
 }
 
 func (h *ExampleHandler) GetUsers(c echo.Context) error {
@@ -37,6 +38,17 @@ func (h *ExampleHandler) GetUsers(c echo.Context) error {
 	}
 
 	resp, err := h.Example.GetByID(ctx, param)
+	if err != nil {
+		h.logger.Info(err)
+		return utils.HandlerError(c, err)
+	}
+	return utils.APIResponseOK(c, resp)
+}
+
+func (h *ExampleHandler) GetAllUser(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	resp, err := h.Example.GetAllUser(ctx)
 	if err != nil {
 		h.logger.Info(err)
 		return utils.HandlerError(c, err)

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	minSecretKeySize = 32
+	minSecretKeySize = 1
 	UserIDKey        = "USER_ID_KEY"
 )
 

@@ -1,3 +1,3 @@
-db-cmd:
-	psql -h localhost -U root -d orc-sys
-.PHONY: db-cmd
+run:
+	go run ./cmd/main.go
+.PHONY: run

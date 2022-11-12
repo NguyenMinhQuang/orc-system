@@ -40,6 +40,10 @@ type appLogger struct {
 	logger      *zap.Logger
 }
 
+func init() {
+
+}
+
 // NewAppLogger App Logger constructor
 func NewAppLogger(cfg *config.Config) *appLogger {
 	return &appLogger{level: cfg.Logger.Level, devMode: cfg.Logger.DevMode, encoding: cfg.Logger.Encoding}

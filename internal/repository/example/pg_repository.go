@@ -26,3 +26,12 @@ func (e *exampleRepository) GetExampleByID(param GetExampleByIDInput, ctx contex
 	// err = e.db.Where("id = ?", param.id).First(&result).Error
 	return result, err
 }
+
+func (e *exampleRepository) GetAllUser(ctx context.Context) ([]model.User, error) {
+	var userList []model.User
+	err := e.db.Select("*").Table(model.UserTable).Find(&userList).Error
+	if err != nil {
+		return nil, err
+	}
+	return userList, nil
+}

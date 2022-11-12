@@ -17,10 +17,10 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 		loggerCfg = middleware.DefaultLoggerConfig
 	)
 	loggerCfg.Skipper = func(c echo.Context) bool {
-		return c.Request().URL.Path == "/healthcheck"
+		return c.Request().URL.Path == "/api/v1/healthcheck"
 	}
-	e.HideBanner = true
-	e.HidePort = true
+	//e.HideBanner = true
+	//e.HidePort = true
 	e.Use(middleware.LoggerWithConfig(loggerCfg))
 	e.Use(middleware.Recover())
 	e.Use(middleware.Secure())
@@ -41,10 +41,11 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 	})
 
 	skipPaths := []string{
-		"/healthcheck",
+		"/api/v1/healthcheck",
 	}
 	nologinPaths := []string{
-		"/api/login",
+		"/api/v1/login",
+		"/api/v1/example/listuser",
 	}
 	e.Use(apiMiddleware.NewAuthenticator(skipPaths, nologinPaths).Middleware(s.tokenMaker))
 
@@ -57,8 +58,9 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 
 	//handler
 	v1 := e.Group("/api/v1")
-	health := v1.Group("/health")
+	health := v1.Group("/healthcheck")
 	exp := v1.Group("/example")
+
 	exampleHandl.NewExampleHandler(exp, exampleUc, s.logger)
 
 	health.GET("", func(c echo.Context) error {

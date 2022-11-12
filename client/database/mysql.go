@@ -14,23 +14,26 @@ var db *gorm.DB
 func NewMysqlDB(cfg *config.Config) (*gorm.DB, error) {
 	var err error
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		cfg.Postgres.UserName,
-		cfg.Postgres.PassWord,
-		cfg.Postgres.Host,
-		cfg.Postgres.Port,
-		cfg.Postgres.DBName)
+		cfg.Mysql.UserName,
+		cfg.Mysql.PassWord,
+		cfg.Mysql.Host,
+		cfg.Mysql.Port,
+		cfg.Mysql.DBName)
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
-	db = db.Debug()
+	if cfg.Mysql.DBDebugMode {
+		db = db.Debug()
+	}
+
 	connection, err := db.DB()
 	if err != nil {
 		return nil, err
 	}
 
-	connection.SetMaxIdleConns(cfg.Postgres.DBMaxIdleConns)
-	connection.SetMaxOpenConns(cfg.Postgres.DBMaxOpenConns)
+	connection.SetMaxIdleConns(cfg.Mysql.DBMaxIdleConns)
+	connection.SetMaxOpenConns(cfg.Mysql.DBMaxOpenConns)
 	connection.SetConnMaxLifetime(time.Second * 14400)
 
 	err = connection.Ping()
