@@ -1,4 +1,4 @@
-package example
+package http
 
 import (
 	"github.com/labstack/echo/v4"
@@ -27,11 +27,18 @@ func (h *ExampleHandler) GetUsers(c echo.Context) error {
 	var param example.GetByIDInput
 
 	if err := c.Bind(&param); err != nil {
+		h.logger.Info(err)
+		return utils.APIResponseError(c, http.StatusBadRequest, httpErrors.ErrBadRequest)
+	}
+
+	if err := param.Validate(); err != nil {
+		h.logger.Info(err)
 		return utils.APIResponseError(c, http.StatusBadRequest, httpErrors.ErrBadRequest)
 	}
 
 	resp, err := h.Example.GetByID(ctx, param)
 	if err != nil {
+		h.logger.Info(err)
 		return utils.HandlerError(c, err)
 	}
 	return utils.APIResponseOK(c, resp)

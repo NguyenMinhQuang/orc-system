@@ -1,4 +1,4 @@
-package delivery
+package server
 
 import (
 	"context"
@@ -16,8 +16,6 @@ import (
 )
 
 const (
-	certFile       = "ssl/Server.crt"
-	keyFile        = "ssl/Server.pem"
 	maxHeaderBytes = 1 << 20
 	ctxTimeout     = 5
 )

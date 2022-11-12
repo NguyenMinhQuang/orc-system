@@ -1,14 +1,15 @@
-package delivery
+package server
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"
+	exampleHandl "orc-system/internal/delivery/http"
 	apiMiddleware "orc-system/internal/middleware"
-	"orc-system/internal/repository"
-	service2 "orc-system/internal/service"
-	"orc-system/internal/usecase"
+	exampleRepo "orc-system/internal/repository/example"
+	exampleSv "orc-system/internal/service/example"
+	exampleUcase "orc-system/internal/usecase/example"
+	"orc-system/pkg/utils"
 )
 
 func (s *Server) NewHTTPHandler(e *echo.Echo) error {
@@ -28,12 +29,6 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 
 	// cors
 	e.Use(middleware.CORSWithConfig(middleware.DefaultCORSConfig))
-	//if s.cfg.AllowOrigins != "" {
-	//	aos := strings.Split(s.cfg.AllowOrigins, ",")
-	//	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-	//		AllowOrigins: aos,
-	//	}))
-	//}
 
 	// cache-control
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -45,11 +40,6 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 		}
 	})
 
-	// healthcheck
-	e.GET("/healthcheck", func(c echo.Context) error {
-		return c.NoContent(http.StatusOK)
-	})
-
 	skipPaths := []string{
 		"/healthcheck",
 	}
@@ -59,10 +49,21 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 	e.Use(apiMiddleware.NewAuthenticator(skipPaths, nologinPaths).Middleware(s.tokenMaker))
 
 	// init repo
-	repo := repository.NewRepository(s.db)
-	service := service2.NewService()
-	useCase := usecase.NewUseCase(repo, service)
-	fmt.Println(useCase)
+	exampleRepo := exampleRepo.NewExampleRepository(s.db)
+	expService := exampleSv.NewExampleService(s.cfg.EndPoint)
 
+	//init usecase
+	exampleUc := exampleUcase.NewExampleUseCase(exampleRepo, expService)
+
+	//handler
+	v1 := e.Group("/api/v1")
+	health := v1.Group("/health")
+	exp := v1.Group("/example")
+	exampleHandl.NewExampleHandler(exp, exampleUc, s.logger)
+
+	health.GET("", func(c echo.Context) error {
+		s.logger.Infof("Health check RequestID: %s", utils.GetRequestID(c))
+		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
+	})
 	return nil
 }

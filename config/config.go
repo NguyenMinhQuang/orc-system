@@ -12,13 +12,15 @@ import (
 var config *Config
 
 type Config struct {
-	AppVersion   string             `envconfig:"APP_VERSION"`
-	Port         string             `envconfig:"PORT"`
-	IsDebug      bool               `envconfig:"IS_DEBUG"`
-	Stage        codetype.StageType `envconfig:"STAGE"`
-	ServiceHost  string             `envconfig:"SERVICE_HOST"`
-	SSL          bool               `envconfig:"SSL"`
-	AllowOrigins string             `envconfig:"ALLOW_ORIGINS"`
+	AppVersion        string             `envconfig:"APP_VERSION"`
+	Port              string             `envconfig:"PORT"`
+	IsDebug           bool               `envconfig:"IS_DEBUG"`
+	Stage             codetype.StageType `envconfig:"STAGE"`
+	ServiceHost       string             `envconfig:"SERVICE_HOST"`
+	SSL               bool               `envconfig:"SSL"`
+	AllowOrigins      string             `envconfig:"ALLOW_ORIGINS"`
+	TokenSymmetricKey string             `envconfig:"TOKEN_SYMMETRIC_KEY"`
+	EndPoint          string             `envconfig:"END_POINT"`
 
 	Postgres struct {
 		Host           string `envconfig:"DB_HOST"`

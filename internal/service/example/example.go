@@ -1,4 +1,4 @@
-package service
+package example
 
 import (
 	"encoding/json"
@@ -8,13 +8,13 @@ import (
 	"time"
 )
 
-type ExampleService struct {
+type exampleService struct {
 	endpoint   string
 	httpClient *http.Client
 }
 
 func NewExampleService(endPoint string) IExample {
-	return &ExampleService{
+	return &exampleService{
 		endpoint: endPoint,
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
@@ -22,7 +22,7 @@ func NewExampleService(endPoint string) IExample {
 	}
 }
 
-func (i *ExampleService) GetList(param *ExpInput) (*ExpOutPut, error) {
+func (i *exampleService) GetList(param *ExpInput) (*ExpOutPut, error) {
 	url := fmt.Sprintf("%v/example", i.endpoint)
 	if param != nil {
 		url = fmt.Sprintf("%v/example?id=%s", i.endpoint, param.ParamId)
