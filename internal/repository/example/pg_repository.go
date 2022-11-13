@@ -4,6 +4,7 @@ import (
 	"context"
 	"gorm.io/gorm"
 	"orc-system/internal/model"
+	"time"
 )
 
 func NewExampleRepository(db *gorm.DB) IRepository {
@@ -22,6 +23,11 @@ func (e *exampleRepository) GetExampleByID(param GetExampleByIDInput, ctx contex
 	if err := param.Validate(); err != nil {
 		return result, err
 	}
+	result.ID = 1
+	result.Name = "test"
+	result.CreatedAt = time.Now()
+	result.UpdatedAt = time.Now()
+
 	// xu ly sql
 	// err = e.db.Where("id = ?", param.id).First(&result).Error
 	return result, err

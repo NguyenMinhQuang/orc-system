@@ -17,6 +17,6 @@ migrate-up:
 install-linter:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 run:
-	go run ./cmd/app/main.go
+	go run ./app/public/main.go
 
 .PHONY: run force install create up down migrate-up install-linter
