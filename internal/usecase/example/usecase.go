@@ -12,10 +12,10 @@ type UseCase struct {
 	Service     sv.IExample
 }
 
-func NewExampleUseCase(repo rp.IRepository, sv sv.IExample) IUseCase {
+func NewExampleUseCase(repo rp.IRepository, svEx sv.IExample) IUseCase {
 	return &UseCase{
 		Config:      config.GetConfig(),
 		ExampleRepo: repo,
-		Service:     sv,
+		Service:     svEx,
 	}
 }

@@ -13,6 +13,7 @@ var db *gorm.DB
 
 func NewMysqlDB(cfg *config.Config) (*gorm.DB, error) {
 	var err error
+	
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		cfg.Mysql.UserName,
 		cfg.Mysql.PassWord,
@@ -23,6 +24,7 @@ func NewMysqlDB(cfg *config.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if cfg.Mysql.DBDebugMode {
 		db = db.Debug()
 	}
@@ -40,6 +42,7 @@ func NewMysqlDB(cfg *config.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return db.Session(&gorm.Session{}), nil
 }
 
@@ -51,5 +54,4 @@ func DisConnect() {
 	if db != nil {
 		sqlDB.Close()
 	}
-
 }

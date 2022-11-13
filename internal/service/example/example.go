@@ -38,7 +38,7 @@ func (i *exampleService) GetList(param *ExpInput) (*ExpOutPut, error) {
 	if !utils.IsHTTPSuccess(resp.StatusCode) {
 		// chinh sua thanh struct tuong ung voi error server tra ve
 		var errHttp interface{}
-		if err = json.NewDecoder(resp.Body).Decode(&errHttp); err != nil {
+		if err := json.NewDecoder(resp.Body).Decode(&errHttp); err != nil {
 			return nil, err
 		}
 		// TODO:...

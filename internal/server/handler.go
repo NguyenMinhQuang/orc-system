@@ -9,6 +9,7 @@ import (
 	exampleRepo "orc-system/internal/repository/example"
 	exampleSv "orc-system/internal/service/example"
 	exampleUcase "orc-system/internal/usecase/example"
+	"orc-system/pkg/logger"
 	"orc-system/pkg/utils"
 )
 
@@ -19,8 +20,7 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 	loggerCfg.Skipper = func(c echo.Context) bool {
 		return c.Request().URL.Path == "/api/v1/healthcheck"
 	}
-	//e.HideBanner = true
-	//e.HidePort = true
+
 	e.Use(middleware.LoggerWithConfig(loggerCfg))
 	e.Use(middleware.Recover())
 	e.Use(middleware.Secure())
@@ -40,31 +40,31 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 		}
 	})
 
+	// non check login
 	skipPaths := []string{
 		"/api/v1/healthcheck",
-	}
-	nologinPaths := []string{
-		"/api/v1/login",
 		"/api/v1/example/listuser",
+		"/api/v1/example/getuser",
 	}
-	e.Use(apiMiddleware.NewAuthenticator(skipPaths, nologinPaths).Middleware(s.tokenMaker))
+	e.Use(apiMiddleware.NewAuthenticator(skipPaths).Middleware(s.tokenMaker))
 
 	// init repo
-	exampleRepo := exampleRepo.NewExampleRepository(s.db)
-	expService := exampleSv.NewExampleService(s.cfg.EndPoint)
+	exRepo := exampleRepo.NewExampleRepository(s.db)
+	exService := exampleSv.NewExampleService(s.cfg.EndPoint)
 
 	//init usecase
-	exampleUc := exampleUcase.NewExampleUseCase(exampleRepo, expService)
+	exampleUc := exampleUcase.NewExampleUseCase(exRepo, exService)
 
 	//handler
 	v1 := e.Group("/api/v1")
 	health := v1.Group("/healthcheck")
 	exp := v1.Group("/example")
 
-	exampleHandl.NewExampleHandler(exp, exampleUc, s.logger)
+	exampleHandl.NewExampleHandler(exp, exampleUc)
 
+	// healthcheck
 	health.GET("", func(c echo.Context) error {
-		s.logger.Infof("Health check RequestID: %s", utils.GetRequestID(c))
+		logger.Infof("Health check RequestID: %s", utils.GetRequestID(c))
 		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
 	})
 	return nil

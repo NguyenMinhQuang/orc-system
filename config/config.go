@@ -3,7 +3,7 @@ package config
 import (
 	"errors"
 	"log"
-	"orc-system/codetype"
+	"orc-system/pkg/codetype"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -38,11 +38,7 @@ type Config struct {
 	}
 
 	Logger struct {
-		DevMode           bool   `envconfig:"DEV_MODE"`
-		DisableCaller     bool   `envconfig:"DISABLECALLER"`
-		DisableStacktrace bool   `envconfig:"DISABLESTACKTRACE"`
-		Encoding          string `envconfig:"ENCODING"`
-		Level             string `envconfig:"LEVEL"`
+		Level string `envconfig:"LEVEL"`
 	}
 }
 

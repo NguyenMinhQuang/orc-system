@@ -5,31 +5,25 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
+	"net/http"
 	"orc-system/config"
-	"orc-system/internal/token"
+	"orc-system/internal/middleware"
 	"orc-system/pkg/logger"
 	"os"
 	"os/signal"
-	"syscall"
 	"time"
-)
-
-const (
-	maxHeaderBytes = 1 << 20
-	ctxTimeout     = 5
 )
 
 // Server struct
 type Server struct {
 	echo       *echo.Echo
-	tokenMaker token.Maker
+	tokenMaker middleware.Maker
 	cfg        *config.Config
 	db         *gorm.DB
-	logger     logger.Logger
 }
 
-func NewServer(cfg *config.Config, db *gorm.DB, logger logger.Logger) (*Server, error) {
-	tokenMaker, err := token.NewJWTMaker(cfg.TokenSymmetricKey)
+func NewServer(cfg *config.Config, db *gorm.DB) (*Server, error) {
+	tokenMaker, err := middleware.NewJWTMaker(cfg.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}
@@ -37,29 +31,27 @@ func NewServer(cfg *config.Config, db *gorm.DB, logger logger.Logger) (*Server, 
 		echo:       echo.New(),
 		tokenMaker: tokenMaker,
 		cfg:        cfg,
-		db:         db,
-		logger:     logger}, nil
+		db:         db}, nil
 }
 
 func (s *Server) Run() error {
-
-	go func() {
-		s.logger.Infof("Server is listening on PORT: %s", s.cfg.Port)
-		if err := s.echo.Start(":" + s.cfg.Port); err != nil {
-			s.logger.Fatalf("Error starting Server: ", err)
-		}
-	}()
-
+	// // Setup
 	if err := s.NewHTTPHandler(s.echo); err != nil {
 		return err
 	}
 
+	// Start server
+	go func() {
+		if err := s.echo.Start(":" + s.cfg.Port); err != nil && err != http.ErrServerClosed {
+			logger.Fatalf("Error starting Server: ", err)
+		}
+	}()
+
 	// gracefull Shutdown
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(quit, os.Interrupt)
 	<-quit
-	ctx, shutdown := context.WithTimeout(context.Background(), ctxTimeout*time.Second)
-	defer shutdown()
-	s.logger.Info("Server Exited Properly")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	return s.echo.Server.Shutdown(ctx)
 }
