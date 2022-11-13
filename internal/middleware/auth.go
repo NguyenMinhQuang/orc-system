@@ -8,14 +8,12 @@ import (
 )
 
 type Authenticator struct {
-	skipPaths    []string
-	nologinPaths []string
+	skipPaths []string
 }
 
-func NewAuthenticator(skipPaths []string, nologinPaths []string) *Authenticator {
+func NewAuthenticator(skipPaths []string) *Authenticator {
 	return &Authenticator{
-		skipPaths:    skipPaths,
-		nologinPaths: nologinPaths,
+		skipPaths: skipPaths,
 	}
 }
 
@@ -34,20 +32,5 @@ func (a *Authenticator) Skipper(c echo.Context) bool {
 			return true
 		}
 	}
-	for _, v := range a.nologinPaths {
-		if v == c.Path() {
-			return a.parseBearerToken(c) == ""
-		}
-	}
 	return false
-}
-
-func (a Authenticator) parseBearerToken(c echo.Context) string {
-	auth := c.Request().Header.Get(echo.HeaderAuthorization)
-	authScheme := "Bearer"
-	l := len(authScheme)
-	if len(auth) > l+1 && auth[:l] == authScheme {
-		return auth[l+1:]
-	}
-	return ""
 }

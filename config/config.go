@@ -3,7 +3,7 @@ package config
 import (
 	"errors"
 	"log"
-	"orc-system/codetype"
+	"orc-system/pkg/codetype"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"

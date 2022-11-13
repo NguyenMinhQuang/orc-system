@@ -3,7 +3,6 @@ package example
 import (
 	"context"
 	"orc-system/internal/repository/example"
-	"orc-system/pkg/logger"
 )
 
 func (u *UseCase) GetByID(ctx context.Context, param GetByIDInput) (GetByIDOutput, error) {
@@ -11,7 +10,6 @@ func (u *UseCase) GetByID(ctx context.Context, param GetByIDInput) (GetByIDOutpu
 		res GetByIDOutput
 		err error
 	)
-	logger.Warn()
 	// get data from DB
 	input := example.GetExampleByIDInput{
 		ID: param.ID,

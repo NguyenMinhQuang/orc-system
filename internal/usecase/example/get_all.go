@@ -2,6 +2,7 @@ package example
 
 import (
 	"context"
+	"errors"
 )
 
 func (u *UseCase) GetAllUser(ctx context.Context) ([]GetAllUserOutput, error) {
@@ -20,5 +21,5 @@ func (u *UseCase) GetAllUser(ctx context.Context) ([]GetAllUserOutput, error) {
 		res = append(res, dt)
 	}
 
-	return res, nil
+	return res, errors.New("todo some thing")
 }
