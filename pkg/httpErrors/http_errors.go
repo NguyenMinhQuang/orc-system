@@ -1,5 +1,7 @@
 package httpErrors
 
+import "fmt"
+
 const (
 	ErrBadRequest          = "Bad request"
 	ErrInternalServerError = "Internal server error"
@@ -13,11 +15,19 @@ const (
 )
 
 type ClientError struct {
-	Message     string
-	CustomeCode string
+	StatusCode string
+	Message    string
+}
+
+func (e ClientError) Error() string {
+	return fmt.Sprintf("code:%s, message:%s", e.StatusCode, e.Message)
 }
 
 type ServeError struct {
-	Message     string
-	CustomeCode string
+	StatusCode string
+	Message    string
+}
+
+func (e ServeError) Error() string {
+	return fmt.Sprintf("code:%s, message:%s", e.StatusCode, e.Message)
 }

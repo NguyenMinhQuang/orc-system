@@ -62,6 +62,7 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 
 	exampleHandl.NewExampleHandler(exp, exampleUc)
 
+	// healthcheck
 	health.GET("", func(c echo.Context) error {
 		logger.Infof("Health check RequestID: %s", utils.GetRequestID(c))
 		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
