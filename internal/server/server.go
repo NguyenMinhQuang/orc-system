@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"orc-system/config"
-	"orc-system/internal/token"
+	"orc-system/internal/middleware"
 	"orc-system/pkg/logger"
 	"os"
 	"os/signal"
@@ -17,13 +17,13 @@ import (
 // Server struct
 type Server struct {
 	echo       *echo.Echo
-	tokenMaker token.Maker
+	tokenMaker middleware.Maker
 	cfg        *config.Config
 	db         *gorm.DB
 }
 
 func NewServer(cfg *config.Config, db *gorm.DB) (*Server, error) {
-	tokenMaker, err := token.NewJWTMaker(cfg.TokenSymmetricKey)
+	tokenMaker, err := middleware.NewJWTMaker(cfg.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}

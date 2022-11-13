@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"orc-system/internal/token"
+	"orc-system/internal/middleware"
 	"orc-system/pkg/httpErrors"
 	"orc-system/pkg/logger"
 	"orc-system/pkg/utils"
@@ -32,7 +32,7 @@ func GetContextInfo(e echo.Context) (c context.Context, info ContextInfo, isLogi
 	c = e.Request().Context()
 	logFields := logger.Fields{}
 	emptyStr := ""
-	userID, ok := e.Get(token.UserIDKey).(string)
+	userID, ok := e.Get(middleware.UserIDKey).(string)
 	if !ok || userID == emptyStr {
 		logFields["user_id"] = emptyStr
 		info.UserID = emptyStr

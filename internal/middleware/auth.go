@@ -3,7 +3,6 @@ package middleware
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"orc-system/internal/token"
 	"strings"
 )
 
@@ -17,7 +16,7 @@ func NewAuthenticator(skipPaths []string) *Authenticator {
 	}
 }
 
-func (a *Authenticator) Middleware(tokenMaker token.Maker) echo.MiddlewareFunc {
+func (a *Authenticator) Middleware(tokenMaker Maker) echo.MiddlewareFunc {
 	return middleware.KeyAuthWithConfig(middleware.KeyAuthConfig{
 		KeyLookup:  "header:Authorization",
 		AuthScheme: "Bearer",
