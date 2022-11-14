@@ -65,7 +65,7 @@ func APIResponseError(c echo.Context, status int, message string) error {
 	return c.JSONPretty(status, errResp, prettyIndent)
 }
 
-func APIResponseCustomCode(c echo.Context, status int, customCode string, message string) error {
+func APIResponseCustomCode(c echo.Context, status int, customCode, message string) error {
 	errResp := APIErrorResponse{Code: fmt.Sprintf("%d-%d", status, customCode), Message: message}
 	if resp := c.Response(); resp != nil {
 		requestID := resp.Header().Get(echo.HeaderXRequestID)

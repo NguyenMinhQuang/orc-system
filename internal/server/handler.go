@@ -49,11 +49,11 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 	e.Use(apiMiddleware.NewAuthenticator(skipPaths).Middleware(s.tokenMaker))
 
 	// init repo
-	exampleRepo := exampleRepo.NewExampleRepository(s.db)
-	expService := exampleSv.NewExampleService(s.cfg.EndPoint)
+	exRepo := exampleRepo.NewExampleRepository(s.db)
+	exService := exampleSv.NewExampleService(s.cfg.EndPoint)
 
 	//init usecase
-	exampleUc := exampleUcase.NewExampleUseCase(exampleRepo, expService)
+	exampleUc := exampleUcase.NewExampleUseCase(exRepo, exService)
 
 	//handler
 	v1 := e.Group("/api/v1")

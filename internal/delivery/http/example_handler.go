@@ -21,10 +21,10 @@ func NewExampleHandler(e *echo.Group, us example.IUseCase) {
 }
 
 func (h *ExampleHandler) GetUsers(c echo.Context) error {
-	ctx, _, _ := GetContextInfo(c)
-	//if !isLogin {
-	//	return APIResponseError(c, http.StatusUnauthorized, httpErrors.ErrUnauthorized)
-	//}
+	ctx, _, isLogin := GetContextInfo(c)
+	if !isLogin {
+		return APIResponseError(c, http.StatusUnauthorized, httpErrors.ErrUnauthorized)
+	}
 
 	var param example.GetByIDInput
 	if err := c.Bind(&param); err != nil {
@@ -47,10 +47,6 @@ func (h *ExampleHandler) GetUsers(c echo.Context) error {
 
 func (h *ExampleHandler) GetAllUser(c echo.Context) error {
 	ctx, _, _ := GetContextInfo(c)
-	//if !isLogin {
-	//	logger.Error(httpErrors.ErrUnauthorized)
-	//	return APIResponseError(c, http.StatusUnauthorized, httpErrors.ErrUnauthorized)
-	//}
 
 	resp, err := h.Example.GetAllUser(ctx)
 	if err != nil {

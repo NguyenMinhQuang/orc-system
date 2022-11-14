@@ -20,9 +20,11 @@ func main() {
 	defer database.DisConnect()
 	s, err := server.NewServer(cfg, sqlDB)
 	if err != nil {
-		log.Fatal("cannot create server:", err)
+		log.Println("cannot create server:", err)
+		return
 	}
 	if err = s.Run(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 }
