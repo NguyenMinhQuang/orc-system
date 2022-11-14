@@ -40,9 +40,11 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 		}
 	})
 
+	// non check login
 	skipPaths := []string{
 		"/api/v1/healthcheck",
 		"/api/v1/example/listuser",
+		"/api/v1/example/getuser",
 	}
 	e.Use(apiMiddleware.NewAuthenticator(skipPaths).Middleware(s.tokenMaker))
 
@@ -60,6 +62,7 @@ func (s *Server) NewHTTPHandler(e *echo.Echo) error {
 
 	exampleHandl.NewExampleHandler(exp, exampleUc)
 
+	// healthcheck
 	health.GET("", func(c echo.Context) error {
 		logger.Infof("Health check RequestID: %s", utils.GetRequestID(c))
 		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})

@@ -81,8 +81,8 @@ func HandlerError(c echo.Context, err error) error {
 		if clErr.Message != "" {
 			msg = clErr.Message
 		}
-		if clErr.CustomeCode != "" {
-			return APIResponseCustomCode(c, http.StatusBadRequest, clErr.CustomeCode, msg)
+		if clErr.StatusCode != "" {
+			return APIResponseCustomCode(c, http.StatusBadRequest, clErr.StatusCode, msg)
 		}
 		return APIResponseError(c, http.StatusBadRequest, msg)
 	}
@@ -92,8 +92,8 @@ func HandlerError(c echo.Context, err error) error {
 		if svError.Message != "" {
 			msg = svError.Message
 		}
-		if svError.CustomeCode != "" {
-			return APIResponseCustomCode(c, http.StatusInternalServerError, svError.CustomeCode, msg)
+		if svError.StatusCode != "" {
+			return APIResponseCustomCode(c, http.StatusInternalServerError, svError.StatusCode, msg)
 		}
 		return APIResponseError(c, http.StatusInternalServerError, msg)
 	}
